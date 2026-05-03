@@ -847,7 +847,11 @@ async function addTransaction(e) {
   btn.disabled    = false;
   btn.textContent = '+ Tambah';
 
-  if (error) { showToast('Gagal simpan!', true); return; }
+  if (error) {
+    console.error('Supabase insert error:', error);
+    showToast(error.message || error.code || 'Gagal simpan!', true);
+    return;
+  }
 
   const rect = btn.getBoundingClientRect();
   particleBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, currentType);
@@ -862,7 +866,7 @@ async function addTransaction(e) {
 // ── Delete ──
 async function deleteTransaction(id) {
   const { error } = await db.from('transactions').delete().eq('id', id);
-  if (error) { showToast('Gagal hapus!', true); return; }
+  if (error) { console.error('Supabase delete error:', error); showToast(error.message || 'Gagal hapus!', true); return; }
   playSound('delete');
   showToast('Dihapus ✓', false);
   await loadTransactions();
